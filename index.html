@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wasm Image Processing</title>
+</head>
+<body>
+    <input type="file" id="upload" />
+    <canvas id="canvas" style="border: 1px solid black;"></canvas>
+    <button id="process">Apply Grayscale</button>
+    <script type="module">
+        import init, { apply_grayscale } from './pkg/wasm_image_processing.js';
+
+        async function run() {
+            await init();
+
+            const upload = document.getElementById('upload');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const button = document.getElementById('process');
+
+            upload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            button.addEventListener('click', () => {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const processedData = apply_grayscale(imageData);
+                ctx.putImageData(processedData, 0, 0);
+            });
+        }
+
+        run();
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+[package]
+name = "wasm_image_processing"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["ImageData"] }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
